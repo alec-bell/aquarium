@@ -29,9 +29,18 @@ document.body.appendChild( renderer.domElement );
  * Camera setup
  */
 var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-camera.position.set(0, 0, 20);
+camera.position.set(0, 0, 40);
 var controls = new THREE.OrbitControls( camera );
 controls.update();
+
+/*
+* Add fish to the scene
+*/
+var numberOfFish = 20;
+
+for (var i = 0; i < numberOfFish; i++) {
+    CreateFish(scene);
+}
 
 // Start plant
 var i;
@@ -52,6 +61,7 @@ render();
 function animate() {
     requestAnimationFrame( animate );
     controls.update();
+    UpdateFish();
     render();
 }
 animate();
