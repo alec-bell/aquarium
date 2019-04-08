@@ -1,8 +1,8 @@
 // Fish variables
-var minBorderX = -20; // area where fish are allowed to spawn
-var maxBorderX = 20;
-var minBorderY = -20;
-var maxBorderY = 20;
+var minBorderX = -160; // area where fish are allowed to spawn
+var maxBorderX = 160;
+var minBorderY = -160;
+var maxBorderY = 160;
 
 // list storing all individual fish
 var fishList = [];
@@ -55,8 +55,8 @@ class Fish {
 
         //this.velocity = new THREE.Vector3(Math.cos(this.rotation) + alignment.x + cohesion.x + separation.x, Math.sin(this.rotation) + alignment.y + separation.y + cohesion.y, 0).normalize();
         //this.velocity = new THREE.Vector3(Math.cos(this.rotation) + this.acceleration.x, Math.sin(this.rotation) + this.acceleration.y, 0);
-        //this.velocity = new THREE.Vector3(this.Clamp(this.velocity.x + this.acceleration.x, -this.maxVelocity, this.maxVelocity), 
-        //                                  this.Clamp(this.velocity.y + this.acceleration.y, -this.maxVelocity, this.maxVelocity), 
+        //this.velocity = new THREE.Vector3(this.Clamp(this.velocity.x + this.acceleration.x, -this.maxVelocity, this.maxVelocity),
+        //                                  this.Clamp(this.velocity.y + this.acceleration.y, -this.maxVelocity, this.maxVelocity),
         //                                  0);
         //this.velocity = new THREE.Vector3(Math.cos(this.rotation), Math.sin(this.rotation));
         this.velocity.add(this.acceleration);

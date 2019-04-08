@@ -4,8 +4,8 @@
 var generations =                           3;
 var pitch =                              22.5;
 var yaw =                                22.5;
-var axiom_sequence =                      "X+X";
-var x_sequence = "X=F->[[X]+X]<+F[R+<F#GX>]-X";
+var axiom_sequence =                    "X+X";
+var x_sequence = "X=F->[[X]+X]<+F[R+<FGX>]-X";
 var f_sequence =                        "F=F";
 
 // Quickly tokenize sequences for use below
@@ -30,13 +30,14 @@ document.body.appendChild( renderer.domElement );
  */
 var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.position.set(0, 0, 40);
+camera.up.set( 0, 0, 1 );
 var controls = new THREE.OrbitControls( camera );
 controls.update();
 
 /*
 * Add fish to the scene
 */
-var numberOfFish = 50;
+var numberOfFish = 100;
 
 for (var i = 0; i < numberOfFish; i++) {
     CreateFish(scene);
@@ -44,14 +45,30 @@ for (var i = 0; i < numberOfFish; i++) {
 
 // Start plant
 var i;
-for (i = -5; i <= 5; i++) {
+for (i = -8; i <= 8; i++) {
   var j;
-  for (j = -5; j <= 5; j++) {
-    var start = new THREE.Vector3(i * 5, j * 5, 0);
+  for (j = -8; j <= 8; j++) {
+    var start = new THREE.Vector3(i * 20, j * 20, 0);
     var axiom_copy = axiom.slice(0);
     draw(start, axiom_copy);
   }
 }
+
+// Sandy Terrain
+var loader = new THREE.TextureLoader();
+var groundGeometry = new THREE.PlaneGeometry( 1000, 1000 );
+var groundMaterial = new THREE.MeshBasicMaterial( { color: 0xFFFFFF, map: loader.load( 'textures/ground_texture.png' ), repeat: new THREE.Vector2(100, 100) } );
+var ground = new THREE.Mesh( groundGeometry, groundMaterial );
+scene.add( ground );
+
+// Ocean
+var oceanGeometry = new THREE.SphereGeometry( 750 );
+var oceanMaterial = new THREE.MeshBasicMaterial( { color: 0x0077be, side: THREE.DoubleSide } );
+var ocean = new THREE.Mesh( oceanGeometry, oceanMaterial );
+scene.add( ocean );
+
+// Fog
+scene.fog = new THREE.Fog( 0x0077be, 50, 500 );
 
 /*
  * Render
@@ -80,9 +97,9 @@ function draw(v, seq, gen = 0, angle_Z = 1.57079632679, angle_X = 1) {
         var token = seq.shift();
         if (token == 'F') {
             var v_copy = new THREE.Vector3().copy(v);
-            v.x += Math.pow(0.7, gen) * Math.sin(angle_X) * Math.cos(angle_Z);
-            v.y += Math.pow(0.7, gen) * Math.sin(angle_Z);
-            v.z += Math.pow(0.7, gen) * Math.cos(angle_X) * Math.sin(angle_Z);
+            v.x += Math.pow(1, gen) * Math.sin(angle_X) * Math.cos(angle_Z);
+            v.y += Math.pow(1, gen) * Math.sin(angle_Z);
+            v.z += Math.pow(1, gen) * Math.cos(angle_X) * Math.sin(angle_Z);
             drawLine(v, v_copy, color);
             var f_seq_copy = f_seq.slice(0);
             result += "F" + draw(v, f_seq_copy, gen + 1, angle_Z, angle_X);
