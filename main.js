@@ -36,7 +36,7 @@ controls.update();
 /*
 * Add fish to the scene
 */
-var numberOfFish = 20;
+var numberOfFish = 50;
 
 for (var i = 0; i < numberOfFish; i++) {
     CreateFish(scene);
@@ -61,13 +61,13 @@ render();
 function animate() {
     requestAnimationFrame( animate );
     controls.update();
-    UpdateFish();
     render();
 }
 animate();
 
 function render() {
-  renderer.render( scene, camera );
+    UpdateFish();
+    renderer.render( scene, camera );
 }
 
 function draw(v, seq, gen = 0, angle_Z = 1.57079632679, angle_X = 1) {
