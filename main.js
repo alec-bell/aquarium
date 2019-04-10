@@ -48,7 +48,9 @@ var i;
 for (i = -8; i <= 8; i++) {
   var j;
   for (j = -8; j <= 8; j++) {
-    var start = new THREE.Vector3(i * 20, j * 20, 0);
+    var x = -160 + (Math.random() * 320);
+    var y = -160 + (Math.random() * 320);
+    var start = new THREE.Vector3(x, y, 0);
     var axiom_copy = axiom.slice(0);
     draw(start, axiom_copy);
   }
