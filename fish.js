@@ -16,7 +16,9 @@ class Fish {
 
       // maximum velocity a fish can travel in any direction
       this.maxVelocity = .5;
-      this.maxRotate = 2;
+
+      // radius of neighboring fish
+      this.radius = 15;
 
       // create fish mesh and add the fish to the scene
       // TODO: replace with fish model
@@ -45,13 +47,12 @@ class Fish {
         var alignment = this.CalculateAlignment(allFish);
         var cohesion = this.CalculateCohesion(allFish);
         var separation = this.CalculateSeparation(allFish);
-        alignment.multiplyScalar(1.0);
+        alignment.multiplyScalar(1.5);
         cohesion.multiplyScalar(1.0);
         separation.multiplyScalar(1.0);
         this.ApplyForce(alignment);
         this.ApplyForce(cohesion);
         this.ApplyForce(separation);
-        this.acceleration.normalize();
 
         // add acceleration to velocity and update position
         this.velocity.add(this.acceleration);
@@ -74,13 +75,12 @@ class Fish {
 
     // Finds the average position of neighboring fish and calculates a new velocity for current fish based on their center of mass
     CalculateCohesion(fishList) {
-        var radius = 20;
         var fishCount = 0;
         var velocity = new THREE.Vector3(0, 0, 0);
 
         // add up the positions of all neighboring fish
         for (var i = 0; i < fishList.length; i++) {
-            if (fishList[i] != this && this.position.distanceTo(fishList[i].position) <= radius) {
+            if (fishList[i] != this && this.position.distanceTo(fishList[i].position) <= this.radius) {
                 velocity.x += fishList[i].position.x;
                 velocity.y += fishList[i].position.y;
                 fishCount++;
@@ -102,13 +102,12 @@ class Fish {
 
     // Finds the average direction/velocity of neighboring fish and calculates a new velocity for current fish based on this direction
     CalculateAlignment(fishList) {
-        var radius = 20; // will search for all other fish in this radius
         var fishCount = 0; // number of other fish in radius; used to calculate average
         var velocity = new THREE.Vector3(0, 0, 0);
 
         // add up the velocities of all neighboring fish
         for (var i = 0; i < fishList.length; i++) {
-            if (fishList[i] != this && this.position.distanceTo(fishList[i].position) <= radius) {
+            if (fishList[i] != this && this.position.distanceTo(fishList[i].position) <= this.radius) {
                 velocity.x += fishList[i].velocity.x;
                 velocity.y += fishList[i].velocity.y;
                 fishCount++;
@@ -127,27 +126,17 @@ class Fish {
 
     // Finds a new velocity vector that steers current fish away from the average position of neighboring fish
     CalculateSeparation(fishList) {
-        var radius = 20; // will search for all other fish in this radius
         var fishCount = 0; // number of other fish in radius; used to calculate average
         var velocity = new THREE.Vector3(0, 0, 0);
 
         // add up the distances between this fish and all neighboring fish
         for (var i = 0; i < fishList.length; i++) {
-            if (fishList[i] != this && (this.position.distanceTo(fishList[i].position) <= radius)) {
+            if (fishList[i] != this && (this.position.distanceTo(fishList[i].position) <= this.radius)) {
                 velocity.x += this.position.x - fishList[i].position.x;
                 velocity.y += this.position.y - fishList[i].position.y;
                 fishCount++;
             }
         }
-
-        /*
-        // calculate average distance and negate final vector so this fish will steer away from neighbors
-        if (fishCount > 0) {
-            velocity.x = -1 * (velocity.x / fishCount);
-            velocity.y = -1 * (velocity.y / fishCount);
-            velocity.normalize();
-        }
-        */
 
         if (fishCount > 0) {
             velocity.divideScalar(fishCount);
@@ -161,16 +150,16 @@ class Fish {
 
     WrapAround() {
         if (this.position.x < minBorderX)
-            this.position.x = maxBorderX;
+            this.position.x = maxBorderX - 1;
 
         if (this.position.x > maxBorderX)
-            this.position.x = minBorderX;
+            this.position.x = minBorderX + 1;
 
         if (this.position.y < minBorderY)
-            this.position.y = maxBorderY;
+            this.position.y = maxBorderY - 1;
 
         if (this.position.y > maxBorderY)
-            this.position.y = minBorderY;
+            this.position.y = minBorderY + 1;
     }
 
     // clamps a value to a minimum and maximum value
