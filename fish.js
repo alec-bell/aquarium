@@ -16,6 +16,7 @@ class Fish {
 
       // maximum velocity a fish can travel in any direction
       this.maxVelocity = .5;
+      this.maxRotate = 2;
 
       // create fish mesh and add the fish to the scene
       // TODO: replace with fish model
@@ -39,31 +40,30 @@ class Fish {
 
     Update() {
         var allFish = fishList;
-        var direction = new THREE.Vector3(Math.cos(this.rotation), Math.sin(this.rotation), 0);
-        direction.normalize();
 
         // calculate alignment, cohesion, and separation
         var alignment = this.CalculateAlignment(allFish);
         var cohesion = this.CalculateCohesion(allFish);
         var separation = this.CalculateSeparation(allFish);
+        alignment.multiplyScalar(1.0);
+        cohesion.multiplyScalar(1.0);
+        separation.multiplyScalar(1.0);
         this.ApplyForce(alignment);
         this.ApplyForce(cohesion);
         this.ApplyForce(separation);
+        this.acceleration.normalize();
 
-        if (this == allFish[0])
-            console.log(this.acceleration);
-
-        //this.velocity = new THREE.Vector3(Math.cos(this.rotation) + alignment.x + cohesion.x + separation.x, Math.sin(this.rotation) + alignment.y + separation.y + cohesion.y, 0).normalize();
-        //this.velocity = new THREE.Vector3(Math.cos(this.rotation) + this.acceleration.x, Math.sin(this.rotation) + this.acceleration.y, 0);
-        //this.velocity = new THREE.Vector3(this.Clamp(this.velocity.x + this.acceleration.x, -this.maxVelocity, this.maxVelocity),
-        //                                  this.Clamp(this.velocity.y + this.acceleration.y, -this.maxVelocity, this.maxVelocity),
-        //                                  0);
-        //this.velocity = new THREE.Vector3(Math.cos(this.rotation), Math.sin(this.rotation));
+        // add acceleration to velocity and update position
         this.velocity.add(this.acceleration);
-        this.velocity.clampScalar(-this.maxVelocity, this.maxVelocity);
+        this.velocity.normalize();
+        this.velocity.multiplyScalar(this.maxVelocity);
         this.position = new THREE.Vector3(this.position.x + this.velocity.x, this.position.y + this.velocity.y, this.position.z);
         this.WrapAround();
         this.mesh.position.set(this.position.x, this.position.y, this.position.z);
+
+        // calculate direction and set rotation of mesh
+        this.rotation = Math.atan2(this.velocity.y, this.velocity.x);
+        this.mesh.rotation.z = this.rotation;
 
         this.acceleration = new THREE.Vector3(0, 0, 0);
     }
@@ -74,7 +74,7 @@ class Fish {
 
     // Finds the average position of neighboring fish and calculates a new velocity for current fish based on their center of mass
     CalculateCohesion(fishList) {
-        var radius = 1;
+        var radius = 20;
         var fishCount = 0;
         var velocity = new THREE.Vector3(0, 0, 0);
 
@@ -102,7 +102,7 @@ class Fish {
 
     // Finds the average direction/velocity of neighboring fish and calculates a new velocity for current fish based on this direction
     CalculateAlignment(fishList) {
-        var radius = 1; // will search for all other fish in this radius
+        var radius = 20; // will search for all other fish in this radius
         var fishCount = 0; // number of other fish in radius; used to calculate average
         var velocity = new THREE.Vector3(0, 0, 0);
 
@@ -127,24 +127,33 @@ class Fish {
 
     // Finds a new velocity vector that steers current fish away from the average position of neighboring fish
     CalculateSeparation(fishList) {
-        var radius = 1; // will search for all other fish in this radius
+        var radius = 20; // will search for all other fish in this radius
         var fishCount = 0; // number of other fish in radius; used to calculate average
         var velocity = new THREE.Vector3(0, 0, 0);
 
         // add up the distances between this fish and all neighboring fish
         for (var i = 0; i < fishList.length; i++) {
-            if (fishList[i] != this && this.position.distanceTo(fishList[i].position) <= radius) {
+            if (fishList[i] != this && (this.position.distanceTo(fishList[i].position) <= radius)) {
                 velocity.x += this.position.x - fishList[i].position.x;
                 velocity.y += this.position.y - fishList[i].position.y;
                 fishCount++;
             }
         }
 
+        /*
         // calculate average distance and negate final vector so this fish will steer away from neighbors
         if (fishCount > 0) {
             velocity.x = -1 * (velocity.x / fishCount);
             velocity.y = -1 * (velocity.y / fishCount);
             velocity.normalize();
+        }
+        */
+
+        if (fishCount > 0) {
+            velocity.divideScalar(fishCount);
+            velocity.normalize();
+            velocity.multiplyScalar(this.maxVelocity);
+            velocity.sub(this.velocity);
         }
 
         return velocity;
