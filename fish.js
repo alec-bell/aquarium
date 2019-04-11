@@ -20,7 +20,7 @@ class Fish {
       // radius of neighboring fish
       this.radius = 15;
 
-      //TODO FISH MODEL PRACTICE
+      // Create fish mesh out of many other meshes
       var mergedgeo = new THREE.Geometry();
 
       // Fish body
@@ -81,7 +81,6 @@ class Fish {
       // Dorsal fin
       var dorsalgeo = new THREE.BoxGeometry(.9,.9,.1);
       var dorsal = new THREE.Mesh(dorsalgeo, material);
-      //dorsal.position.x = -.1;
       dorsal.rotation.x = Math.PI/2;
       dorsal.rotation.z = Math.PI/4;
       dorsal.updateMatrix();
@@ -98,13 +97,6 @@ class Fish {
 
 
       this.mesh = new THREE.Mesh(mergedgeo, material);
-
-
-      // create fish mesh and add the fish to the scene
-      // TODO: replace with fish model
-      //var geometry = new THREE.BoxGeometry(1, .5, .5);
-      //var material = new THREE.MeshBasicMaterial( {color: 0xffffff} );
-      //this.mesh = new THREE.Mesh(geometry, material);
       this.mesh.position.set(position.x, position.y, position.z);
       this.mesh.rotation.z = this.rotation;
       scene.add(this.mesh);
