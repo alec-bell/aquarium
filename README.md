@@ -13,6 +13,12 @@ Alec Bell, Jessica Moyer, Rob LaTour
 - JavaScript code is in main.js. This includes a parser `draw()` for the grammar. Variables are defined at the top (generations, sequences, and rotation angles).
 - Definition of the `Fish` class is in `fish.js`.
 
+## Flocking
+- The movement patterns of the fish are dictated by a flocking algorithm known as Boids Algorithm.
+
+## L-system Grammar
+- The flora on the floor of the aquarium is produced by an L-system.
+
 ## L-system Grammar Symbols
 - `F` moves forward 1 unit.
 - `-` rotates the current line clockwise about the z-axis.
