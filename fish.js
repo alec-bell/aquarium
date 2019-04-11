@@ -118,16 +118,6 @@ class Fish {
       scene.add(this.mesh);
     }
 
-    RotateToward(destination) {
-        var direction = new THREE.Vector3(destination.x - this.position.x, destination.y - this.position.y, destination.z - this.position.z);
-        direction.normalize();
-        direction = new THREE.Vector3(direction.x * this.maxVelocity, direction.y * this.maxVelocity, direction.z * this.maxVelocity);
-
-        var newDirection = new THREE.Vector3(direction.x - this.velocity.x, direction.y - this.velocity.y, direction.z - this.velocity.z);
-        newDirection.clampScalar(-this.maxForce, this.maxForce);
-        return newDirection;
-    }
-
     Update() {
         var allFish = fishList;
 
@@ -248,16 +238,6 @@ class Fish {
 
         if (this.position.y > maxBorderY)
             this.position.y = minBorderY + 1;
-    }
-
-    // clamps a value to a minimum and maximum value
-    Clamp(x, min, max) {
-        if (x < min)
-            return min;
-        else if (x > max)
-            return max;
-        else
-            return x;
     }
 }
 
