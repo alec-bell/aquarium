@@ -23,9 +23,23 @@ class Fish {
       // Create fish mesh out of many other meshes
       var mergedgeo = new THREE.Geometry();
 
+      // Create the possibility of three different colors/scales of the fish
+      var size;
+      var material;
+      var rand = Math.random()*3;
+      if(rand < 1){
+        size = .5;
+        material = new THREE.MeshBasicMaterial( {color: 0xff0000});
+      } else if(rand < 2){
+        size = 2;
+        material = new THREE.MeshBasicMaterial( {color: 0xfbff3f});
+      } else {
+        size = 1;
+        material = new THREE.MeshBasicMaterial( {color: 0xff6c11});
+      }
+
       // Fish body
       var bodygeo = new THREE.BoxGeometry(2, .5, .5);
-      var material = new THREE.MeshBasicMaterial( {color: 0xff6c11});
       var body = new THREE.Mesh(bodygeo, material);
       body.updateMatrix();
 
@@ -85,7 +99,6 @@ class Fish {
       dorsal.rotation.z = Math.PI/4;
       dorsal.updateMatrix();
 
-
       // Merge 'em up
       mergedgeo.merge(body.geometry, body.matrix);
       mergedgeo.merge(head.geometry, head.matrix);
@@ -94,6 +107,9 @@ class Fish {
       mergedgeo.merge(left.geometry, left.matrix);
       mergedgeo.merge(right.geometry, right.matrix);
       mergedgeo.merge(dorsal.geometry, dorsal.matrix);
+
+      // Scale properly
+      mergedgeo.scale(size, size, size);
 
 
       this.mesh = new THREE.Mesh(mergedgeo, material);
