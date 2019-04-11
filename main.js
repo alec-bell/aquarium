@@ -37,7 +37,7 @@ controls.update();
 /*
 * Add fish to the scene
 */
-var numberOfFish = 300;
+var numberOfFish = 20;
 
 for (var i = 0; i < numberOfFish; i++) {
     CreateFish(scene);

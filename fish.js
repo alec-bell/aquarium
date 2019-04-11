@@ -6,6 +6,7 @@ var maxBorderY = 160;
 
 // list storing all individual fish
 var fishList = [];
+var finished = false;
 
 class Fish {
     constructor(position, scene) {
@@ -21,7 +22,7 @@ class Fish {
       this.radius = 15;
 
       // Create fish mesh out of many other meshes
-      var mergedgeo = new THREE.Geometry();
+      /*var mergedgeo = new THREE.Geometry();
 
       // Fish body
       var bodygeo = new THREE.BoxGeometry(2, .5, .5);
@@ -61,7 +62,6 @@ class Fish {
       tail2.rotation.y = Math.PI;
       tail2.updateMatrix();
 
-
       // Left fin
       var leftgeo = new THREE.BoxGeometry(1.2,.1,.4);
       var left = new THREE.Mesh(leftgeo, material);
@@ -85,7 +85,6 @@ class Fish {
       dorsal.rotation.z = Math.PI/4;
       dorsal.updateMatrix();
 
-
       // Merge 'em up
       mergedgeo.merge(body.geometry, body.matrix);
       mergedgeo.merge(head.geometry, head.matrix);
@@ -93,13 +92,49 @@ class Fish {
       mergedgeo.merge(tail2.geometry, tail2.matrix);
       mergedgeo.merge(left.geometry, left.matrix);
       mergedgeo.merge(right.geometry, right.matrix);
-      mergedgeo.merge(dorsal.geometry, dorsal.matrix);
+      mergedgeo.merge(dorsal.geometry, dorsal.matrix);*/
 
 
-      this.mesh = new THREE.Mesh(mergedgeo, material);
-      this.mesh.position.set(position.x, position.y, position.z);
-      this.mesh.rotation.z = this.rotation;
-      scene.add(this.mesh);
+      // Use fancy 3d rendered fish instead
+      /*var obj;
+      var objLoader = new THREE.OBJLoader();
+      objLoader.load('textures/fish.obj',
+                function(object){
+                    obj = object;
+                    object.traverse(function(child){
+                        if (child instanceof THREE.Mesh){
+                            child.material.transparent = true;
+                        }
+                    });
+                }
+            );*/
+      var myObjPromise = loadObj();
+      myObjPromise.then(obj => {
+            /*obj.traverse(function(child){
+                if (child instanceof THREE.Mesh){
+                    child.material.transparent = true;
+                }
+            });*/
+            this.obj = obj;
+            this.obj.position.x = this.position.x;
+            this.obj.position.y = this.position.y;
+            this.obj.position.z = this.position.z;
+            this.obj.rotateZ(this.rotation);
+            scene.add(this.obj);
+            finished = true;
+            //console.log(this.obj);
+            //console.log(obj.children[0]);
+            //this.mesh = new THREE.Mesh(obj.children[0].geometry, obj.children[0].material);
+            //this.mesh.position.set(position.x, position.y, position.z);
+            //this.mesh.rotation.z = this.rotation;
+            //scene.add(this.mesh);
+      });
+      //this.mesh = new THREE.Mesh(obj.children[0].geometry, obj.children[0].material);
+
+      //this.mesh = new THREE.Mesh(mergedgeo, material);
+      //this.mesh.position.set(position.x, position.y, position.z);
+      //this.mesh.rotation.z = this.rotation;
+      //scene.add(this.mesh);
     }
 
     RotateToward(destination) {
@@ -113,6 +148,7 @@ class Fish {
     }
 
     Update() {
+        if(finished){
         var allFish = fishList;
 
         // calculate alignment, cohesion, and separation
@@ -132,13 +168,17 @@ class Fish {
         this.velocity.multiplyScalar(this.maxVelocity);
         this.position = new THREE.Vector3(this.position.x + this.velocity.x, this.position.y + this.velocity.y, this.position.z);
         this.WrapAround();
-        this.mesh.position.set(this.position.x, this.position.y, this.position.z);
+
+        //this.mesh.position.set(this.position.x, this.position.y, this.position.z);
+        this.obj.lookAt(this.position);
 
         // calculate direction and set rotation of mesh
         this.rotation = Math.atan2(this.velocity.y, this.velocity.x);
-        this.mesh.rotation.z = this.rotation;
+        //this.mesh.rotation.z = this.rotation;
+        this.obj.rotateZ(this.rotation);
 
         this.acceleration = new THREE.Vector3(0, 0, 0);
+    }
     }
 
     ApplyForce(force) {
@@ -243,6 +283,21 @@ class Fish {
         else
             return x;
     }
+}
+
+function loadObj(){
+    return new Promise(function(resolve, reject){
+        var obj;
+        var mtlLoader = new THREE.MTLLoader();
+        mtlLoader.load('textures/fish.mtl', function(materials){
+            materials.preload();
+
+            var objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(materials);
+
+            objLoader.load('textures/fish.obj', resolve);
+        });
+    });
 }
 
 // create a new fish object and add it to the scene
