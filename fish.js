@@ -20,11 +20,91 @@ class Fish {
       // radius of neighboring fish
       this.radius = 15;
 
+      //TODO FISH MODEL PRACTICE
+      var mergedgeo = new THREE.Geometry();
+
+      // Fish body
+      var bodygeo = new THREE.BoxGeometry(2, .5, .5);
+      var material = new THREE.MeshBasicMaterial( {color: 0xff6c11});
+      var body = new THREE.Mesh(bodygeo, material);
+      body.updateMatrix();
+
+      // Fish head
+      var headgeo = new THREE.ConeGeometry(.3, .5);
+      var head = new THREE.Mesh(headgeo, material);
+      head.position.x = 1.2;
+      head.rotation.z = -Math.PI/2;
+      head.updateMatrix();
+
+      // Fish Tail
+      var tailgeo = new THREE.BoxGeometry(.4,.5,.1);
+      var matrix = new THREE.Matrix4();
+      matrix.set(1,  0,  0,  0,
+                 2,  1,  0,  0,
+                 0,  0,  1,  0,
+                 0,  0,  0,  1, );
+      tailgeo.applyMatrix(matrix);
+      var tail = new THREE.Mesh(tailgeo, material);
+      tail.position.x = -1.1;
+      tail.position.z = .2;
+      tail.rotation.x = Math.PI/2;
+      tail.rotation.z = Math.PI/4;
+      tail.updateMatrix();
+
+      var tail2geo = new THREE.BoxGeometry(.4,.5,.1);
+      tail2geo.applyMatrix(matrix);
+      var tail2 = new THREE.Mesh(tail2geo, material);
+      tail2.position.x = -1.1;
+      tail2.position.z = -.2;
+      tail2.rotation.x = Math.PI/2;
+      tail2.rotation.z = Math.PI/4;
+      tail2.rotation.y = Math.PI;
+      tail2.updateMatrix();
+
+
+      // Left fin
+      var leftgeo = new THREE.BoxGeometry(1.2,.1,.4);
+      var left = new THREE.Mesh(leftgeo, material);
+      left.position.x = .3;
+      left.position.y = .2;
+      left.rotation.z = -Math.PI/4;
+      left.updateMatrix();
+
+      // Right fin
+      var rightgeo = new THREE.BoxGeometry(1.2,.1,.4);
+      var right = new THREE.Mesh(rightgeo, material);
+      right.position.x = .3;
+      right.position.y = -.2;
+      right.rotation.z = Math.PI/4;
+      right.updateMatrix();
+
+      // Dorsal fin
+      var dorsalgeo = new THREE.BoxGeometry(.9,.9,.1);
+      var dorsal = new THREE.Mesh(dorsalgeo, material);
+      //dorsal.position.x = -.1;
+      dorsal.rotation.x = Math.PI/2;
+      dorsal.rotation.z = Math.PI/4;
+      dorsal.updateMatrix();
+
+
+      // Merge 'em up
+      mergedgeo.merge(body.geometry, body.matrix);
+      mergedgeo.merge(head.geometry, head.matrix);
+      mergedgeo.merge(tail.geometry, tail.matrix);
+      mergedgeo.merge(tail2.geometry, tail2.matrix);
+      mergedgeo.merge(left.geometry, left.matrix);
+      mergedgeo.merge(right.geometry, right.matrix);
+      mergedgeo.merge(dorsal.geometry, dorsal.matrix);
+
+
+      this.mesh = new THREE.Mesh(mergedgeo, material);
+
+
       // create fish mesh and add the fish to the scene
       // TODO: replace with fish model
-      var geometry = new THREE.BoxGeometry(1, .5, .5);
-      var material = new THREE.MeshBasicMaterial( {color: 0xffffff} );
-      this.mesh = new THREE.Mesh(geometry, material);
+      //var geometry = new THREE.BoxGeometry(1, .5, .5);
+      //var material = new THREE.MeshBasicMaterial( {color: 0xffffff} );
+      //this.mesh = new THREE.Mesh(geometry, material);
       this.mesh.position.set(position.x, position.y, position.z);
       this.mesh.rotation.z = this.rotation;
       scene.add(this.mesh);
